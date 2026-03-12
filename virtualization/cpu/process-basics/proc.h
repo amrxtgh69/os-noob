@@ -31,6 +31,6 @@ extern struct proc* current_proc;
 extern struct proc* allocproc(void);
 
 extern struct proc* vfork(struct proc *parent);
-extern struct proc* exec(struct proc *p, void *program);
-extern struct proc* wait(struct proc *parent, int *status);
+extern struct proc* vexec(struct proc *p, void *program);
+extern struct proc* vwait(struct proc *parent, int *status);
 #endif // !PROC_H

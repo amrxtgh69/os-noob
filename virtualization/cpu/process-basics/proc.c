@@ -53,8 +53,8 @@ struct proc* vfork(struct proc *parent) {
   // child is runnabke
   return child;
 }
-struct proc* exec(struct proc *p, void *program) {}
-struct proc* wait(struct proc *parent, int *status) {}
+struct proc* vexec(struct proc *p, void *program) {}
+struct proc* vwait(struct proc *parent, int *status) {}
 void start_process(void) {}
 
 int main(int argc, char *argv[])
