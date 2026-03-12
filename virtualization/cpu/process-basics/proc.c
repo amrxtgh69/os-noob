@@ -7,6 +7,8 @@ struct proc ptable[NPROC];
 int nextpid = 1;
 struct proc* current_proc = 0;
 
+void start_process(void) {}
+
 // creating the process state in the table
 struct proc* allocproc(void) {
   struct proc* p = 0; //null pointer 
@@ -33,14 +35,14 @@ struct proc* allocproc(void) {
     return 0;
   }
   memset(&p->context, 0, sizeof(p->context));
-  p->context.eip = (int)start_process; //sets the instruction pointer to the function where the process should start executing
+   p->context.eip = (long)start_process; //sets the instruction pointer to the function where the process should start executing
   p->context.esp = (long)(p->kstack + 4096); //sets the stack pointer to the top of the allocated stack
   p->state = RUNNABLE;
   return p;
 }
 
 struct proc* vfork(struct proc *parent) {
-  // Allocate thenew process
+  // Allocate the new process
   struct proc *child = allocproc();
   if (!child)  return NULL;  // allocation failed
   // Copy context (CPU registers)
@@ -55,21 +57,38 @@ struct proc* vfork(struct proc *parent) {
 }
 struct proc* vexec(struct proc *p, void *program) {
   if (!p) return NULL;
-
   //reset CPU context
   p->context.esp = (long)(p->kstack + 4096);
-
   //setting instruction pointer to the program entry
   p->context.eip = (long)program;
-
   //making sure process is runnable
   p->state = RUNNABLE;
   return p;
 }
-struct proc* vwait(struct proc *parent, int *status) {}
-void start_process(void) {}
+struct proc* vwait(struct proc *parent, int *status) {
+    for (int i = 0; i < NPROC; i++) {
+        struct proc *p = &ptable[i];
+        // check if this process belongs to the parent
+        if (p->parent == parent) {
+            // check if the child finished execution
+            if (p->state == ZOMBIE) {
+                // status is provided, set it to the child's exit status
+                if (status)
+                    *status = p->exit_status;
+                // free kernel stack
+                if (p->kstack)
+                    free(p->kstack);
+                // reset process slot
+                p->kstack = NULL;
+                p->parent = NULL;
+                p->pid = 0;
+                p->state = UNUSED;
 
-int main(int argc, char *argv[])
-{
-  return 0;
+                return p;
+            }
+        }
+    }
+    // no zombie child found
+    return NULL;
 }
+

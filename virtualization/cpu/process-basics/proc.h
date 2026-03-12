@@ -12,6 +12,7 @@ struct context {
   int ebx, ecx, edx, esi, edi, ebp;
 };
 
+// character of the process
 struct proc {
   int pid;
   struct proc *parent;
