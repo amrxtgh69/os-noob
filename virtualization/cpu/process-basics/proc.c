@@ -53,7 +53,19 @@ struct proc* vfork(struct proc *parent) {
   // child is runnabke
   return child;
 }
-struct proc* vexec(struct proc *p, void *program) {}
+struct proc* vexec(struct proc *p, void *program) {
+  if (!p) return NULL;
+
+  //reset CPU context
+  p->context.esp = (long)(p->kstack + 4096);
+
+  //setting instruction pointer to the program entry
+  p->context.eip = (long)program;
+
+  //making sure process is runnable
+  p->state = RUNNABLE;
+  return p;
+}
 struct proc* vwait(struct proc *parent, int *status) {}
 void start_process(void) {}
 
