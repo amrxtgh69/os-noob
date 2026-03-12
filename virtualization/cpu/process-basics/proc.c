@@ -21,8 +21,7 @@ struct proc* allocproc(void) {
   
   p->state = EMBRYO; //marks as EMBRYO
   p->pid = nextpid++; // assign pid
-  p->parent = current_proc; // set parent if this is very first process(init) 
-                           // `current_proc` might be NULL
+  p->parent = current_proc; // set parent if this is very first process(init) `current_proc` might be NULL
   
   // allocate kernel stack
   // allocated 4 KB of memory for the stack
@@ -33,20 +32,30 @@ struct proc* allocproc(void) {
     p->state = UNUSED;
     return 0;
   }
-
   memset(&p->context, 0, sizeof(p->context));
-  p->context.eip = (int)start_process; //sets the instruction pointer to the 
-                                       //function where the process should
-                                       //start executing
-  p->context.esp = (int)(p->kstack + 4096); //sets the stack pointer to the top
-                                            //of the allocated stack
-
+  p->context.eip = (int)start_process; //sets the instruction pointer to the function where the process should start executing
+  p->context.esp = (long)(p->kstack + 4096); //sets the stack pointer to the top of the allocated stack
   p->state = RUNNABLE;
-
-
   return p;
 }
 
+struct proc* vfork(struct proc *parent) {
+  // Allocate thenew process
+  struct proc *child = allocproc();
+  if (!child)  return NULL;  // allocation failed
+  // Copy context (CPU registers)
+  memcpy(&child->context, &parent->context, sizeof(struct context));
+  //child ko parent parent
+  child->parent = parent;
+
+  child->program = parent->program;
+  child->state = RUNNABLE;
+  // child is runnabke
+  return child;
+}
+struct proc* exec(struct proc *p, void *program) {}
+struct proc* wait(struct proc *parent, int *status) {}
+void start_process(void) {}
 
 int main(int argc, char *argv[])
 {
