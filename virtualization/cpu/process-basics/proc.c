@@ -64,7 +64,25 @@ struct proc* vexec(struct proc *p, void *program) {
   //making sure process is runnable
   p->state = RUNNABLE;
   return p;
-}
+} 
+
+
+/*
+We can consider this:
+parent forks child -> child exists
+The parent must collect the child status otherwise resources leak so unix has wait() 
+
+Conceptually
+
+  `Parent blocks until a child finishes`
+
+whwn child exits:   state -> ZOMBIE
+
+then wait():
+read exit status
+frees process resources
+marks slot UNUSED
+*/
 struct proc* vwait(struct proc *parent, int *status) {
     for (int i = 0; i < NPROC; i++) {
         struct proc *p = &ptable[i];
