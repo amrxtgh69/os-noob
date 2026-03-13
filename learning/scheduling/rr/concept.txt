@@ -1,9 +1,0 @@
-Round Robin (RR) exposes the Trade-off Between Response Time and Turnaround Time.
-
-Key insight: RR provides good response time by giving each process frequent CPU bursts, but at the cost of increased turnaround time due to context switching overhead.
-
-Example showing the trade-off:
-- Quantum too small: excessive context switching, poor throughput
-- Quantum too large: behaves like FCFS, poor response time for short processes
-
-Learning focus: Understand that RR solves the response time problem of FCFS but introduces a new optimization challenge - choosing the right time quantum. This motivates MLFQ's approach of using multiple queues with different quantums to balance both metrics.
