@@ -1,0 +1,1 @@
+# Operating system: a resource allocator + control program that makes hardware usable
