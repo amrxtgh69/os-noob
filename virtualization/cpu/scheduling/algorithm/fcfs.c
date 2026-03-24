@@ -24,7 +24,8 @@ this problem is generally referred as the CONVOY effect.
 
 #include "../process.h"
 #include "../scheduler.h"
-#include <stdlib.h>
+#include <stddef.h>
+
 
 /* 
 What is FIFO queue ?
@@ -65,12 +66,12 @@ void scheduler_add_process(Process* p) {
     enqueue(p);
 }
 
-Process* scheduler_process_ticked(Process* p, int tick_elapsed) {
+Process* scheduler_process_ticked(Process* p, int tick_elapsed, int global_time) {
     if (p != NULL) { return p; }
     if (!empty()) {
         Process* next = dequeue();
         next->state = RUNNING;
-        next->start_time = tick_elapsed;
+        next->start_time = global_time;
         return next;
     }
     return NULL;
