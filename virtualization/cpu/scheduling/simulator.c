@@ -34,7 +34,7 @@ int main(void) {
       Process *ready = get_ready_process();
       if (ready != NULL) { scheduler_add_process(ready); }
       /* Scheduler decides that run this tick */
-      current = scheduler_process_ticked(current, 1); // tick elapsed = 1
+      current = scheduler_process_ticked(current, 1, time);
       /* Execute tick */
       if (current != NULL) { 
         current->remaining_time--;
@@ -42,7 +42,6 @@ int main(void) {
         /* Check if the process finished */
         if (current->remaining_time <= 0) {
           scheduler_finished_process(current);
-          finished++;
           current = NULL;
         }
       }
