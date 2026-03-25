@@ -1,5 +1,12 @@
 /*
-Process's burst time is already known using the various algorithms 
+ * Shortest Job First(SJF) scheduling - Non preemptive
+ * - The scheduler selects the process with the smallest remaining_time
+ *  ONLY when the CPU becomes idle.
+ 
+ * - Once the process starts execution, it is not preempted.
+ * It runs until completion.
+ * 
+ * - The ready queue is scanned to find the shortest job.
 */
 #include "../process.h"
 #include "../scheduler.h"
@@ -12,6 +19,9 @@ int front = 0;
 int rear = 0;
 int count = 0; //count the number of the process in the queue
 
+/*
+ * in sjf enqueue means just add the process no matter where unlike fcfs
+*/
 void enqueue(Process *p) {
     if (count == MAX_PROCESS) { return; }
     queue[rear] = p;
@@ -19,8 +29,38 @@ void enqueue(Process *p) {
     count++; 
 }
 
-Process* dequeue() {
+/*
+ * Remaining time: In the context of operating systems, remaining time (or residual time) 
+ * refers to the amount of CPU time a process still requires to complete its execution. 
+ * It is a critical metric used by the CPU scheduler to decide which task should run next.
+*/
+Process* get_shortest_job() {
     if (count == 0) { return NULL; }
+    int shortest_index = front;
+    int idx = front;
+
+    /* Getting the index of the shortest job*/
+    for (int i = 0; i < count; i++) {
+        if (queue[idx]->remaining_time < queue[shortest_index]-> remaining_time) {
+            shortest_index = idx;
+        }
+        idx = (idx + 1) % MAX_PROCESS;
+
+        while (next != rear) {
+            queue[shortest_index] = queue[next];
+            shortest_index = next;
+            next = (next + 1) % MAX_PROCESS;
+        }
+    }
+
+    /* extract that process */
+    Process* shortest = queue[shortest_index];
+    
+    int next = (shortest_index + 1) % MAX_PROCESS;
+
+
+    
+
     Process* p = queue[front];
     front = (front + 1) % MAX_PROCESS; // use circular buffer thats why study dsa
     count --;
