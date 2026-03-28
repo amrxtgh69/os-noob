@@ -1,5 +1,5 @@
-#if !defined(SCHEDULAR_H)
-#define SCHEDULAR_H
+#if !defined(SCHEDULER_H)
+#define SCHEDULER_H
 #include "process.h"
 
 /* init scheduler at the simulation start */ 
@@ -11,6 +11,6 @@ Process* scheduler_process_ticked(Process* p, int tick_elapsed, int global_time)
 /* cleanup or the keeping of the state when the process finished */ 
 void scheduler_finished_process(Process* p);
 
-#endif // SCHEDULAR_H
+#endif // SCHEDULER_H
 
 
