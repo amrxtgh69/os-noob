@@ -9,7 +9,6 @@
  * - The ready queue is scanned to find the shortest job.
 */
 #include "../process.h"
-#include "../scheduler.h"
 #include <stdlib.h>
 
 #define MAX_PROCESS 10
