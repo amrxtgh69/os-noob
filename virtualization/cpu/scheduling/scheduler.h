@@ -1,16 +1,18 @@
-#if !defined(SCHEDULER_H)
+#ifndef SCHEDULER_H
 #define SCHEDULER_H
+
 #include "process.h"
 
-/* init scheduler at the simulation start */ 
-void scheduler_init();
-/* add a process to scheduler when it becomes READY */ 
-void scheduler_add_process(Process* p);
-/* Update scheduler state after the process ran for tick_elapsed */ 
-Process* scheduler_process_ticked(Process* p, int tick_elapsed, int global_time);
-/* cleanup or the keeping of the state when the process finished */ 
-void scheduler_finished_process(Process* p);
+typedef void (*SchedulerInitFn)(void);
+typedef void (*SchedulerAddFn)(Process*);
+typedef Process* (*SchedulerTickFn)(Process*, int, int);
+typedef void (*SchedulerFinishedFn)(Process*);
 
-#endif // SCHEDULER_H
+typedef struct Scheduler {
+    SchedulerInitFn init;
+    SchedulerAddFn add_process;
+    SchedulerTickFn process_ticked;
+    SchedulerFinishedFn finished_process;
+} Scheduler;
 
-
+#endif
