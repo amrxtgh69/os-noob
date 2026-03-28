@@ -23,7 +23,6 @@ this problem is generally referred as the CONVOY effect.
 */
 
 #include "../process.h"
-#include "../scheduler.h"
 #include <stddef.h>
 
 
@@ -56,17 +55,17 @@ Process* dequeue() {
 }
 int empty() { return count == 0; }
 
-void scheduler_init() {
+void fcfs_init() {
     front = 0;
     rear = 0;
     count = 0;
 }
 
-void scheduler_add_process(Process* p) {
+void fcfs_add_process(Process* p) {
     enqueue(p);
 }
 
-Process* scheduler_process_ticked(Process* p, int tick_elapsed, int global_time) {
+Process* fcfs_tick(Process* p, int tick_elapsed, int global_time) {
     if (p != NULL) { return p; }
     if (!empty()) {
         Process* next = dequeue();
@@ -77,6 +76,6 @@ Process* scheduler_process_ticked(Process* p, int tick_elapsed, int global_time)
     return NULL;
 }
 
-void scheduler_finished_process(Process* p) {
+void fcfs_finished(Process* p) {
     if (p != NULL) { p->state = TERMINATED; }
 }
