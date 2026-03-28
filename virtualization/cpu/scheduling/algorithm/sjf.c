@@ -29,13 +29,14 @@ void enqueue(Process *p) {
     count++; 
 }
 
+int empty() { return count == 0; }
 /*
  * Remaining time: In the context of operating systems, remaining time (or residual time) 
  * refers to the amount of CPU time a process still requires to complete its execution. 
  * It is a critical metric used by the CPU scheduler to decide which task should run next.
 */
 Process* get_shortest_job() {
-    if (count == 0) { return NULL; }
+    if (empty()) { return NULL; }
     int shortest_index = front;
     int idx = front;
 
@@ -50,12 +51,26 @@ Process* get_shortest_job() {
     Process* shortest = queue[shortest_index];
     
     int next = (shortest_index + 1) % MAX_PROCESS;
-    
+    while (next != (front + count) % MAX_PROCESS) {
+        queue[shortest_index] = queue[next];
+        shortest_index = next;
+        next = (next + 1) % MAX_PROCESS;
+    }
+    count--;
     return shortest;
 }
-int empty() { return count == 0; }
 
+void scheduler_init() {
+  front = 0;
+  rear = 0;
+  count = 0;
+}
 
 void scheduler_add_process(Process* p) {
     enqueue(p);
 }
+Process* scheduler_process_ticked(Process* p, int tick_elapsed, int global_time) {
+
+}
+
+void scheduler_finished_process(Process *a);
