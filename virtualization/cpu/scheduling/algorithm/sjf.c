@@ -45,26 +45,13 @@ Process* get_shortest_job() {
             shortest_index = idx;
         }
         idx = (idx + 1) % MAX_PROCESS;
-
-        while (next != rear) {
-            queue[shortest_index] = queue[next];
-            shortest_index = next;
-            next = (next + 1) % MAX_PROCESS;
         }
-    }
-
     /* extract that process */
     Process* shortest = queue[shortest_index];
     
     int next = (shortest_index + 1) % MAX_PROCESS;
-
-
     
-
-    Process* p = queue[front];
-    front = (front + 1) % MAX_PROCESS; // use circular buffer thats why study dsa
-    count --;
-    return p;
+    return shortest;
 }
 int empty() { return count == 0; }
 
