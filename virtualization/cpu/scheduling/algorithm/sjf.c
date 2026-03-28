@@ -60,17 +60,18 @@ Process* get_shortest_job() {
     return shortest;
 }
 
-void scheduler_init() {
+void sjf_init() {
   front = 0;
   rear = 0;
   count = 0;
 }
 
-void scheduler_add_process(Process* p) {
+void sjf_add_process(Process* p) {
     enqueue(p);
 }
-Process* scheduler_process_ticked(Process* p, int tick_elapsed, int global_time) {
-
+Process* sjf_tick(Process* p, int tick_elapsed, int global_time) {
+  if (p == NULL) { return get_shortest_job(); }
+  p->remaining_time -= tick_elapsed;
 }
 
-void scheduler_finished_process(Process *a);
+void sjf_finished(Process *a);
