@@ -69,9 +69,18 @@ void sjf_init() {
 void sjf_add_process(Process* p) {
     enqueue(p);
 }
-Process* sjf_tick(Process* p, int tick_elapsed, int global_time) {
-  if (p == NULL) { return get_shortest_job(); }
-  p->remaining_time -= tick_elapsed;
+
+Process* sjf_tick(Process* p, int tick, int global_time) {
+    if (p == NULL) return get_shortest_job();
+
+    // Decrease remaining time
+    p->remaining_time -= tick;
+
+    if (p->remaining_time <= 0) return get_shortest_job();
+
+    return p; // keep running same process
 }
 
-void sjf_finished(Process *a);
+void sjf_finished(Process* p) {
+    p->state = TERMINATED;;
+}
