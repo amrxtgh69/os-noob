@@ -34,6 +34,17 @@ int empty() { return count == 0; }
  * refers to the amount of CPU time a process still requires to complete its execution. 
  * It is a critical metric used by the CPU scheduler to decide which task should run next.
 */
+void clear_gap(int idx) {
+  int next = (idx + 1) % MAX_PROCESS;
+  while (next != (front + count) % MAX_PROCESS) {
+    queue[idx] = queue[next];
+    idx = next;
+    next = (next + 1) % MAX_PROCESS;
+  }
+  count--;
+  rear = (rear - 1 + MAX_PROCESS) % MAX_PROCESS;
+}
+
 Process* get_shortest_job() {
     if (empty()) { return NULL; }
     int shortest_index = front;
@@ -45,17 +56,11 @@ Process* get_shortest_job() {
             shortest_index = idx;
         }
         idx = (idx + 1) % MAX_PROCESS;
-        }
+    }
     /* extract that process */
     Process* shortest = queue[shortest_index];
-    
-    int next = (shortest_index + 1) % MAX_PROCESS;
-    while (next != (front + count) % MAX_PROCESS) {
-        queue[shortest_index] = queue[next];
-        shortest_index = next;
-        next = (next + 1) % MAX_PROCESS;
-    }
-    count--;
+
+    clear_gap(shortest_index);
     return shortest;
 }
 
