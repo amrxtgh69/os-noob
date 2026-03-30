@@ -65,6 +65,5 @@ int main(void) {
                p->pid, p->arrival_time, p->burst_time,
                p->start_time, p->completion_time, turnaround, waiting);
     }
-
     return 0;
 }
