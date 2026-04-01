@@ -25,11 +25,20 @@ Process* dequeue() {
   return p;
 }
 
-void rr_init() {}
+void rr_init() {
+  front = 0;
+  rear = 0;
+  count = 0;
+}
 
-void rr_add_process(Process* p) {}
+void rr_add_process(Process* p) {
+  enqueue(p);
+  count++;
+}
 
-Process* rr_tick(Process* p, int tick, int global_time) {}
+Process* rr_tick(Process* p, int tick, int global_time) {
+
+}
 
 void rr_finished(Process* p) {
 
