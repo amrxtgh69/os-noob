@@ -9,7 +9,7 @@
  *
  * running short job first reduces total waiting time for everyone.
  *
- * no lers suppose
+ * now lets suppose
  * job          time
  * A            10s
  * B            1s
