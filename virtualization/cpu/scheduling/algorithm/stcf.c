@@ -1,4 +1,26 @@
 /*
+ * Any time a new job enters the system, it determines the remaining jobs and new jobs
+ * which has the least time left, and it schedules that one.
+ * imagine 
+ * job A -> time needed 10
+ * job B -> time needed 1
+ * if scheduler run A first then B waits for 10 units: which is bad
+ * if scheduler run B first then A is delayed by 1 units.
+ *
+ * running short job first reduces total waiting time for everyone.
+ *
+ * no lers suppose
+ * job          time
+ * A            10s
+ * B            1s
+ *
+ * user run A(big program)
+ * then run small command(B)
+ * (STCF) : if B arrives runs immediately(ok?)
+ * but if many small job keep coming then user might feel system is slow.
+ *
+ * this leads to the new metric system which is response time:
+ * Response Time = first time cpu responds - arrival time
  * 
  * */
 #include "../process.h"
