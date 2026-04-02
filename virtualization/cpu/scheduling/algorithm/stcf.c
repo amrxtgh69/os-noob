@@ -22,6 +22,9 @@
  * this leads to the new metric system which is response time:
  * Response Time = first time cpu responds - arrival time
  * 
+ *
+ * The Question is: Which currently-running/waiting jobs has the shortest remaining time.
+ * To answer that it needs burst time. thats exactly where the oracle problem lives.
  * */
 #include "../process.h"
 #include <stdlib.h>
