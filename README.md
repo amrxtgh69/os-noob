@@ -1,2 +1,1 @@
-# Operating system: a resource allocator + control program that makes hardware usable
-- this is repo for learning and fuck around 
+# Operating system: The software that we take for granted
