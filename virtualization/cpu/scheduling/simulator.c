@@ -2,25 +2,30 @@
 #include "process.h"
 #include "scheduler.h"
 
-
-#include "algorithm/sjf.c"  
+#include "algorithm/fcfs.c"  
 
 #define MAX_PROCESSES 10
 
 Process processes[MAX_PROCESSES];
-int process_count = 0; // set this before simulation
+int process_count = 3;
+
+void setup_test_processes(void) {
+    processes[0].pid = 1; processes[0].arrival_time = 0; processes[0].burst_time = 10;
+    processes[1].pid = 2; processes[1].arrival_time = 0; processes[1].burst_time = 20;
+    processes[2].pid = 3; processes[2].arrival_time = 0; processes[2].burst_time = 30;
+}
 
 int main(void) {
+    setup_test_processes();
     int time = 0;
     int finished = 0;
     Process* current = NULL;
 
-    // Set up scheduler interface
     Scheduler scheduler = {
-        .init = sjf_init,
-        .add_process = sjf_add_process,
-        .process_ticked = sjf_tick,
-        .finished_process = sjf_finished
+        .init = fcfs_init,
+        .add_process = fcfs_add_process,
+        .process_ticked = fcfs_tick,
+        .finished_process = fcfs_finished
     };
 
     scheduler.init();
@@ -33,7 +38,6 @@ int main(void) {
     }
 
     while (finished < process_count) {
-        // Move arriving processes to READY and add to scheduler
         for (int i = 0; i < process_count; i++) {
             Process* p = &processes[i];
             if (p->arrival_time == time && p->state == CREATED) {
@@ -42,10 +46,12 @@ int main(void) {
             }
         }
 
-        // Scheduler decides which process runs
         current = scheduler.process_ticked(current, 1, time);
 
-        // Execute tick and check for completion
+        if (current != NULL) {
+            current->remaining_time--;
+        }
+
         if (current != NULL && current->remaining_time <= 0) {
             current->completion_time = time + 1;
             scheduler.finished_process(current);
@@ -56,14 +62,19 @@ int main(void) {
         time++;
     }
 
-    printf("PID\tArrival\tBurst\tStart\tCompletion\tTurnaround\tWaiting\n");
+    int total_turnaround = 0;
+    printf("PID\tArrival\tBurst\tStart\tCompletion\tTurnaround\n");
     for (int i = 0; i < process_count; i++) {
         Process* p = &processes[i];
         int turnaround = p->completion_time - p->arrival_time;
-        int waiting = turnaround - p->burst_time;
-        printf("%d\t%d\t%d\t%d\t%d\t\t%d\t\t%d\n",
+        total_turnaround += turnaround;
+        printf("%d\t%d\t%d\t%d\t%d\t\t%d\n",
                p->pid, p->arrival_time, p->burst_time,
-               p->start_time, p->completion_time, turnaround, waiting);
+               p->start_time, p->completion_time, turnaround);
     }
+
+    double avg_turnaround = (double)total_turnaround / process_count;
+    printf("\nAverage Turnaround Time: %.2f\n", avg_turnaround);
+
     return 0;
 }
