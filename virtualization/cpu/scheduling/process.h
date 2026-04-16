@@ -15,6 +15,7 @@ typedef struct Process {
 
     int start_time;       // It is the exact time(tick) when a process first gets CPU time. 
     int completion_time;  // Tick when process finishes execution
+    int priority_level;
     State state;
 } Process;
 
