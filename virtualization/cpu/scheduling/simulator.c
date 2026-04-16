@@ -10,9 +10,9 @@ Process processes[MAX_PROCESSES];
 int process_count = 3;
 
 void setup_test_processes(void) {
-    processes[0].pid = 1; processes[0].arrival_time = 0; processes[0].burst_time = 10;
-    processes[1].pid = 2; processes[1].arrival_time = 0; processes[1].burst_time = 20;
-    processes[2].pid = 3; processes[2].arrival_time = 0; processes[2].burst_time = 30;
+    processes[0].pid = 1; processes[0].arrival_time = 0; processes[0].burst_time = 100;
+    processes[1].pid = 2; processes[1].arrival_time = 0; processes[1].burst_time = 10;
+    processes[2].pid = 3; processes[2].arrival_time = 0; processes[2].burst_time = 10;
 }
 
 int main(void) {
