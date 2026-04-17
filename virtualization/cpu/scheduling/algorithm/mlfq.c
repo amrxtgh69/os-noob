@@ -20,12 +20,28 @@ void mlfq_init(void) {
   }
 }
 
-void mlfq_add_process(Process* p) {
-  // Add to highest priority queue (Q0)
-  if (mlfq[0].count < MAX) {
-    mlfq[0].arr[++mlfq[0].rear % MAX] = p;
-    mlfq[0].count++;
+void enqueue(Queue *q, Process *p) {
+  if (q->count == MAX) {
+    return;
   }
+  q->rear = (q->rear + 1) % MAX;
+
+  q->arr[q->rear] = p;
+  q->count++;
+}
+
+Process* dequeue(Queue *q) {
+  if (q->count == 0) {
+    return 0;
+  }
+  Process *p = q->arr[q->front];
+  q->front = (q->front + 1) % MAX;
+  q->count--;
+  return p;
+}
+
+void mlfq_add_process(Process* p) {
+  enqueue(&mlfq[0], p);
 }
 
 Process* mlfq_tick(Process* current, int tick, int global_time) {
