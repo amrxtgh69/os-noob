@@ -34,7 +34,7 @@ void enqueue(Queue *q, Process *p) {
 
 Process* dequeue(Queue *q) {
   if (q->count == 0) {
-    return 0;
+    return NULL;
   }
   Process *p = q->arr[q->front];
   q->front = (q->front + 1) % MAX;
@@ -57,9 +57,30 @@ Process* pick_next() {
   return NULL;
 }
 
+void mlfq_finished(Process* p);
+
 Process* mlfq_tick(Process* current, int tick, int global_time) {
   if (current == NULL) {
-    return pick_next();
+    current = pick_next();
+  if (current != NULL) {
+    current->time_quantum = 0;
+  }
+    return current;
+  }
+  current->remaining_time--;
+  current->time_quantum++;
+  if (current->remaining_time == 0) {
+    mlfq_finished(current);
+    return NULL;
+  }
+  if (current->time_quantum >=quantum) {
+    current->time_quantum = 0;
+    // this is demotation 
+    if (current->priority_level <= LEVELS - 1) {
+      current->priority_level++;
+    }
+    enqueue(&mlfq[current->priority_level], current);
+    return NULL;
   }
   return current;
 }
