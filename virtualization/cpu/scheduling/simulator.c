@@ -17,7 +17,7 @@ void setup_test_processes(void) {
 
 int main(void) {
     setup_test_processes();
-    int time = 0;
+    int global_time = 0;
     int finished = 0;
     Process* current = NULL;
 
@@ -40,26 +40,26 @@ int main(void) {
     while (finished < process_count) {
         for (int i = 0; i < process_count; i++) {
             Process* p = &processes[i];
-            if (p->arrival_time == time && p->state == CREATED) {
+            if (p->arrival_time == global_time && p->state == CREATED) {
                 p->state = READY;
                 scheduler.add_process(p);
             }
         }
 
-        current = scheduler.process_ticked(current, 1, time);
+        current = scheduler.process_ticked(current, 1, global_time);
 
         if (current != NULL) {
             current->remaining_time--;
         }
 
         if (current != NULL && current->remaining_time <= 0) {
-            current->completion_time = time + 1;
+            current->completion_time = global_time + 1;
             scheduler.finished_process(current);
             finished++;
             current = NULL;
         }
 
-        time++;
+        global_time++;
     }
 
     int total_turnaround = 0;
