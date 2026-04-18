@@ -16,6 +16,7 @@ typedef struct Process {
     int start_time;       // It is the exact time(tick) when a process first gets CPU time. 
     int completion_time;  // Tick when process finishes execution
     int priority_level;
+    int time_quantum;     // It decides the time quantum in the mlfq
     State state;
 } Process;
 
