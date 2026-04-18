@@ -1,10 +1,12 @@
 #include "../process.h"
+#include <stddef.h>
 
 #define MAX 10
 #define LEVELS 3
+#define quantum 2
 
 typedef struct {
-  Process* arr[MAX];
+  Process *arr[MAX];
   int front;
   int rear;
   int count;
@@ -44,7 +46,21 @@ void mlfq_add_process(Process* p) {
   enqueue(&mlfq[0], p);
 }
 
+Process* pick_next() {
+  int i = 0;
+  while (i < LEVELS) {
+    if (mlfq[i].count > 0) {
+      return dequeue(&mlfq[i]);
+    }
+    i++;
+  }
+  return NULL;
+}
+
 Process* mlfq_tick(Process* current, int tick, int global_time) {
+  if (current == NULL) {
+    return pick_next();
+  }
   return current;
 }
 
