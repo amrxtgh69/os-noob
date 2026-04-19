@@ -7,14 +7,48 @@
 #define MAX_PROCESSES 10
 
 Process processes[MAX_PROCESSES];
-int process_count = 3;
+int process_count = 0;
 
-void setup_test_processes(void) {
-    processes[0].pid = 1; processes[0].arrival_time = 0; processes[0].burst_time = 100;
-    processes[1].pid = 2; processes[1].arrival_time = 0; processes[1].burst_time = 10;
-    processes[2].pid = 3; processes[2].arrival_time = 0; processes[2].burst_time = 10;
+int load_workload(char* filename) {
+    FILE* f = fopen(filename, "r");
+    if (!f) {
+        perror("Failed to open workload file");
+        return -1;
+    }
+
+    char line[128];
+    int i = 0;
+
+    while (fgets(line, sizeof(line), f)) {
+        if (line[0] == '#' || line[0] == '\n') continue;
+
+        int pid, arrival, burst;
+        sscanf(line, "%d %d %d", &pid, &arrival, &burst);
+
+        processes[i].pid = pid;
+        processes[i].arrival_time = arrival;
+        processes[i].burst_time = burst;
+        processes[i].remaining_time = burst;
+
+        i++;
+    }
+
+    fclose(f);
+    process_count = i;
+    return i;
 }
+
+//void setup_test_processes(void) {
+//    processes[0].pid = 1; processes[0].arrival_time = 0; processes[0].burst_time = 100;
+//    processes[1].pid = 2; processes[1].arrival_time = 0; processes[1].burst_time = 10;
+//    processes[2].pid = 3; processes[2].arrival_time = 0; processes[2].burst_time = 10;
+//}
+
 void run_simulation(char* workload_file, Scheduler* scheduler) {
+    if (load_workload(workload_file) < 0) {
+        return;
+    }
+
     int global_time = 0;
     int finished = 0;
     Process* current = NULL;
@@ -69,7 +103,7 @@ int main(void) {
         .finished_process = fcfs_finished
     };
 
-    run_simulation("workload.txt", &fcfs);
+    run_simulation("workloads/simple.txt", &fcfs);
 
     return 0;
 }
