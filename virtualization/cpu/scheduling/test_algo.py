@@ -5,7 +5,7 @@ with open("workloads/test.tst") as f:
     data = json.load(f)
 
 for test in data["tests"]:
-    workload = test[workload]
+    workload = test["workload"]
     for run in test["runs"]:
         algo = run["algo"]
 
