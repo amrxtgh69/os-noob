@@ -14,39 +14,23 @@ void setup_test_processes(void) {
     processes[1].pid = 2; processes[1].arrival_time = 0; processes[1].burst_time = 10;
     processes[2].pid = 3; processes[2].arrival_time = 0; processes[2].burst_time = 10;
 }
-
-int main(void) {
-    setup_test_processes();
+void run_simulation(char* workload_file, Scheduler* scheduler) {
     int global_time = 0;
     int finished = 0;
     Process* current = NULL;
 
-    Scheduler scheduler = {
-        .init = fcfs_init,
-        .add_process = fcfs_add_process,
-        .process_ticked = fcfs_tick,
-        .finished_process = fcfs_finished
-    };
-
-    scheduler.init();
+    scheduler->init();
 
     for (int i = 0; i < process_count; i++) {
-        processes[i].state = CREATED;
+        processes[i].state = READY;
         processes[i].remaining_time = processes[i].burst_time;
         processes[i].start_time = -1;
         processes[i].completion_time = -1;
+        scheduler->add_process(&processes[i]);
     }
 
     while (finished < process_count) {
-        for (int i = 0; i < process_count; i++) {
-            Process* p = &processes[i];
-            if (p->arrival_time == global_time && p->state == CREATED) {
-                p->state = READY;
-                scheduler.add_process(p);
-            }
-        }
-
-        current = scheduler.process_ticked(current, 1, global_time);
+        current = scheduler->process_ticked(current, 1, global_time);
 
         if (current != NULL) {
             current->remaining_time--;
@@ -54,7 +38,7 @@ int main(void) {
 
         if (current != NULL && current->remaining_time <= 0) {
             current->completion_time = global_time + 1;
-            scheduler.finished_process(current);
+            scheduler->finished_process(current);
             finished++;
             current = NULL;
         }
@@ -75,6 +59,17 @@ int main(void) {
 
     double avg_turnaround = (double)total_turnaround / process_count;
     printf("\nAverage Turnaround Time: %.2f\n", avg_turnaround);
+}
+
+int main(void) {
+    Scheduler fcfs = {
+        .init = fcfs_init,
+        .add_process = fcfs_add_process,
+        .process_ticked = fcfs_tick,
+        .finished_process = fcfs_finished
+    };
+
+    run_simulation("workload.txt", &fcfs);
 
     return 0;
 }
