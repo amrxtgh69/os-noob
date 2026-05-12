@@ -1,4 +1,5 @@
 #include "proc.h"
+#include "proc.c"
 #include <stdio.h>
 
 int main(void) {
