@@ -5,10 +5,10 @@
 
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE}; // STATE OF THE PROCESS 
 
-// to caputure the snapshot of the process's cpu state at the particular time
+// to capture the snapshot of the process's cpu state at the particular time
 struct context {
-  int eip;
-  int esp;
+  int eip;       //instruction pointer
+  int esp;       //stack pointer
   int ebx, ecx, edx, esi, edi, ebp;
 };
 
