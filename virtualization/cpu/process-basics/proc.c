@@ -1,53 +1,60 @@
+#include "proc.h"
 #include <stdlib.h>
 #include <string.h>
-#include "proc.h"
-
 
 struct proc ptable[NPROC];
 int nextpid = 1;
-struct proc* current_proc = 0;
+struct proc *current_proc = 0;
 
 void start_process(void) {}
 
 // creating the process state in the table
-struct proc* allocproc(void) {
-  struct proc* p = 0; //null pointer 
-  
+struct proc *allocproc(void) {
+  struct proc *p = 0; // null pointer
+
   for (int i = 0; i < NPROC; i++) {
     if (ptable[i].state == UNUSED) {
       p = &ptable[i];
       break;
     }
   }
-  if (!p) { return 0; } //if no free slots then return null pointer
-  
-  p->state = EMBRYO; //marks as EMBRYO
-  p->pid = nextpid++; // assign pid
-  p->parent = current_proc; // set parent if this is very first process(init) `current_proc` might be NULL
-  
+  if (!p) {
+    return 0;
+  } // if no free slots then return null pointer
+
+  p->state = EMBRYO;        // marks as EMBRYO
+  p->pid = nextpid++;       // assign pid
+  p->parent = current_proc; // set parent if this is very first process(init)
+                            // `current_proc` might be NULL
+
   // allocate kernel stack
   // allocated 4 KB of memory for the stack
-  p->kstack = (char*)malloc(4096);
-  // if allocation failed then we rollback by marking the process 
+  p->kstack = (char *)malloc(4096);
+  // if allocation failed then we rollback by marking the process
   // as UNUSED again and return null
   if (!p->kstack) {
     p->state = UNUSED;
     return 0;
   }
   memset(&p->context, 0, sizeof(p->context));
-   p->context.eip = (long)start_process; //sets the instruction pointer to the function where the process should start executing
-  p->context.esp = (long)(p->kstack + 4096); //sets the stack pointer to the top of the allocated stack
+  p->context.eip =
+      (long)start_process; // sets the instruction pointer to the function where
+                           // the process should start executing
+  p->context.esp =
+      (long)(p->kstack +
+             4096); // sets the stack pointer to the top of the allocated stack
   p->state = RUNNABLE;
   return p;
 }
 
-struct proc* vfork(struct proc *parent) {
+struct proc *vfork(struct proc *parent) {
   // Allocate the new process
   struct proc *child = allocproc();
-  if (!child)  return NULL;  // allocation failed
+  if (!child)
+    return NULL; // allocation failed
   // Copy context (CPU registers)
   memcpy(&child->context, &parent->context, sizeof(struct context));
-  //child ko parent parent
+  // child ko parent parent
   child->parent = parent;
 
   child->program = parent->program;
@@ -56,22 +63,23 @@ struct proc* vfork(struct proc *parent) {
   return child;
 }
 
-struct proc* vexec(struct proc *p, void *program) {
-  if (!p) return NULL;
-  //reset CPU context
+struct proc *vexec(struct proc *p, void *program) {
+  if (!p)
+    return NULL;
+  // reset CPU context
   p->context.esp = (long)(p->kstack + 4096);
-  //setting instruction pointer to the program entry
+  // setting instruction pointer to the program entry
   p->context.eip = (long)program;
-  //making sure process is runnable
+  // making sure process is runnable
   p->state = RUNNABLE;
   return p;
-} 
-
+}
 
 /*
 We can consider this:
 parent forks child -> child exists
-The parent must collect the child status otherwise resources leak so unix has wait() 
+The parent must collect the child status otherwise resources leak so unix has
+wait()
 
 Conceptually
 
@@ -84,30 +92,29 @@ read exit status
 frees process resources
 marks slot UNUSED
 */
-struct proc* vwait(struct proc *parent, int *status) {
-    for (int i = 0; i < NPROC; i++) {
-        struct proc *p = &ptable[i];
-        // check if this process belongs to the parent
-        if (p->parent == parent) {
-            // check if the child finished execution
-            if (p->state == ZOMBIE) {
-                // status is provided, set it to the child's exit status
-                if (status)
-                    *status = p->exit_status;
-                // free kernel stack
-                if (p->kstack)
-                    free(p->kstack);
-                // reset process slot
-                p->kstack = NULL;
-                p->parent = NULL;
-                p->pid = 0;
-                p->state = UNUSED;
+struct proc *vwait(struct proc *parent, int *status) {
+  for (int i = 0; i < NPROC; i++) {
+    struct proc *p = &ptable[i];
+    // check if this process belongs to the parent
+    if (p->parent == parent) {
+      // check if the child finished execution
+      if (p->state == ZOMBIE) {
+        // status is provided, set it to the child's exit status
+        if (status)
+          *status = p->exit_status;
+        // free kernel stack
+        if (p->kstack)
+          free(p->kstack);
+        // reset process slot
+        p->kstack = NULL;
+        p->parent = NULL;
+        p->pid = 0;
+        p->state = UNUSED;
 
-                return p;
-            }
-        }
+        return p;
+      }
     }
-    // no zombie child found
-    return NULL;
+  }
+  // no zombie child found
+  return NULL;
 }
-
